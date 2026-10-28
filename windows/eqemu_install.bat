@@ -222,6 +222,10 @@ if not exist "%PERL_BIN%\perl.exe" (
 )
 echo   [OK] Strawberry Perl
 :PERL_READY
+REM Make perl available to t_*.bat in new command prompts (not only this script)
+call :ADD_MACHINE_PATH "C:\Strawberry\c\bin"
+call :ADD_MACHINE_PATH "C:\Strawberry\perl\site\bin"
+call :ADD_MACHINE_PATH "%PERL_BIN%"
 set "PATH=%PATH%;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin"
 assoc .pl=Perl >nul
 ftype Perl="%PERL_BIN%\perl.exe" "%%1" %%* >nul
