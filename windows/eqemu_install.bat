@@ -105,10 +105,10 @@ GOTO :EXIT
 
 :INSTALL_MARIADB
 	echo Installing MariaDB (Root Password: eqemu) LOADING... PLEASE WAIT...
-	start /wait msiexec /i mariadb-10.0.21-winx64.msi SERVICENAME=MySQL PORT=3306 PASSWORD=eqemu /qn
+	start /wait msiexec /i mariadb-10.11.19-winx64.msi SERVICENAME=MySQL PORT=3306 PASSWORD=eqemu /qn
 	setx /M path "%path%;C:\Program Files\MariaDB 10.0\bin"
 	SET PATH=%path%;C:\Program Files\MariaDB 10.0\bin
-	del mariadb-10.0.21-winx64.msi
+	del mariadb-10.11.19-winx64.msi
 
 	GOTO :MAIN
 
