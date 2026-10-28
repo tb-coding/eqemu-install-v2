@@ -1,5 +1,4 @@
 cd /d "%~dp0"
-REM Use perl from PATH, or Strawberry Perl when PATH has not been updated
-set "PERL=perl"
-where perl >nul 2>&1 || set "PERL=C:\Strawberry\perl\bin\perl.exe"
-"%PERL%" eqemu_server.pl windows_server_latest
+REM Strawberry Perl must be on PATH: perl.exe for the scripts and perl524.dll for zone.exe
+where perl >nul 2>&1 || set "PATH=C:\Strawberry\perl\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\c\bin;%PATH%"
+perl eqemu_server.pl windows_server_latest
