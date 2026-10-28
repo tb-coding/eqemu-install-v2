@@ -291,7 +291,16 @@ echo #########################################################
 echo #::: Installation finished.
 echo #::: Open a NEW command prompt to pick up the updated PATH.
 echo #########################################################
+if /i "%MARIADB_ROOT_PASSWORD%"=="eqemu" call :WARN_DEFAULT_PASSWORD
 pause
+exit /b 0
+
+:WARN_DEFAULT_PASSWORD
+echo.
+echo [WARN] MariaDB root password is still the default: eqemu
+echo        If this server will be reachable from the internet, change it, e.g.:
+echo          mysql -uroot -peqemu -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'NEW_PASSWORD';"
+echo        then update the database password in eqemu_config.json and login.json.
 exit /b 0
 
 :DOWNLOAD_FAILED
