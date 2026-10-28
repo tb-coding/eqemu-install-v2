@@ -7,3 +7,8 @@ spire/
 .wget-hsts
 install_config.yaml
 spire-windows-install.exe
+downloads/
+install_logs/
+windows/server/
+windows/downloads/
+windows/install_logs/
