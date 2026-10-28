@@ -18,7 +18,7 @@
 | 等待按鍵 | `<>`(會把參數 new_server 當檔案開啟) | `<STDIN>`;空資料夾檢查失敗改回傳 exit 1 |
 | 自我更新 | 下載上游 eqemu_server.pl | 停用(上游檔案已刪,wget 會存成空檔並覆蓋本檔) |
 
-未驗證:PEQ 資料庫 `http://db.projecteq.net/api/v1/dump/latest` 與任務腳本 `codeload.github.com/ProjectEQ/projecteqquests`。
+PEQ 資料庫依序嘗試 `db.eqemu.dev`、`db.projecteq.net`、`peqarchive/peqdatabase`(2025-09-28 封存),並檢查下載結果是否為有效 zip;也可把自行下載的 `peq-latest.zip` 放在伺服器資料夾優先使用。
 
 ### 使用注意
 

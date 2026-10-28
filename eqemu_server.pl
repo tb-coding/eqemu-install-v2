@@ -1452,8 +1452,34 @@ sub check_windows_firewall_rules
 
 sub fetch_peq_db_full
 {
-    print "[Install] Downloading latest PEQ Database... Please wait...\n";
-    get_remote_file("http://db.projecteq.net/api/v1/dump/latest", "updates_staged/peq-latest.zip", 1);
+    # tb-coding: db.projecteq.net 可能回傳空檔,依序嘗試多個來源並檢查是否為有效 zip;
+    # 也可把自行下載的 peq-latest.zip 放在伺服器資料夾,會優先使用
+    my @peq_db_sources = (
+        "https://db.eqemu.dev/api/v1/dump/latest",
+        "http://db.projecteq.net/api/v1/dump/latest",
+        # PEQ 資料庫封存(2025-09-28),上面都失敗時使用
+        "https://raw.githubusercontent.com/peqarchive/peqdatabase/main/peq-latest.zip",
+    );
+    my $peq_zip = "updates_staged/peq-latest.zip";
+    mkdir('updates_staged');
+    if (is_valid_zip("peq-latest.zip")) {
+        print "[Install] Using local PEQ Database [peq-latest.zip]\n";
+        copy_file("peq-latest.zip", $peq_zip);
+    }
+    else {
+        foreach my $source (@peq_db_sources) {
+            print "[Install] Downloading latest PEQ Database... Please wait...\n";
+            unlink($peq_zip);
+            get_remote_file($source, $peq_zip, 1);
+            last if is_valid_zip($peq_zip);
+            print "[Install] PEQ Database from [" . $source . "] is not a valid zip, trying next source...\n";
+        }
+    }
+    if (!is_valid_zip($peq_zip)) {
+        print "[Install] ERROR: Could not download the PEQ Database from any source.\n";
+        print "[Install] Download peq-latest.zip manually, put it next to eqemu_server.pl and run again.\n";
+        exit 1;
+    }
     print "[Install] Downloaded latest PEQ Database... Extracting...\n";
     unzip('updates_staged/peq-latest.zip', 'updates_staged/peq_db/');
     my $start_dir = "updates_staged/peq_db/peq-dump";
@@ -1469,6 +1495,18 @@ sub fetch_peq_db_full
             get_mysql_result_from_file($file);
         }
     }
+}
+
+#::: tb-coding: 檢查檔案是否為 zip(大於 1MB 且以 PK 開頭),避免解壓空檔或錯誤頁面
+sub is_valid_zip
+{
+    my $file = $_[0];
+    return 0 if (!-e $file || -s $file < 1000000);
+    open(my $fh, '<', $file) or return 0;
+    binmode($fh);
+    read($fh, my $signature, 2);
+    close($fh);
+    return $signature eq "PK";
 }
 
 sub map_files_fetch_bulk
