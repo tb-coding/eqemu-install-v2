@@ -44,7 +44,7 @@ set "PERL_BIN=C:\Strawberry\perl\bin"
 set "VCREDIST_EXE=vc_redist.x64.exe"
 set "VCREDIST_URL=https://aka.ms/vs/17/release/vc_redist.x64.exe"
 
-set "EQEMU_SERVER_PL_URL=https://raw.githubusercontent.com/EQEmu/Server/master/utils/scripts/eqemu_server.pl"
+set "EQEMU_SERVER_PL_URL=https://raw.githubusercontent.com/tb-coding/eqemu-install-v2/main/eqemu_server.pl"
 set "EQEMU_CONFIG_URL=https://raw.githubusercontent.com/tb-coding/eqemu-install-v2/main/eqemu_config.json"
 
 REM Optional SHA256 checksums (leave empty to skip the comparison;
