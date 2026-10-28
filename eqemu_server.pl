@@ -20,8 +20,10 @@ use Time::HiRes qw(usleep);
 #############################################
 # variables
 #############################################
-my $install_repository_request_url = "https://raw.githubusercontent.com/Akkadius/eqemu-install-v2/master/";
-my $eqemu_repository_request_url   = "https://raw.githubusercontent.com/EQEmu/Server/master/";
+# tb-coding: Akkadius/eqemu-install-v2 已移除,改用 tb-coding/eqemu-install-v2 (main)
+my $install_repository_request_url = "https://raw.githubusercontent.com/tb-coding/eqemu-install-v2/main/";
+# tb-coding: 上游 repo 已改名為 EQEmu/EQEmu (opcodes / loginserver 檔案仍在)
+my $eqemu_repository_request_url   = "https://raw.githubusercontent.com/EQEmu/EQEmu/master/";
 my $opcodes_path                   = "";
 my $patches_path                   = "";
 my $time_stamp                     = strftime('%m-%d-%Y', gmtime());
@@ -65,7 +67,8 @@ if (-e "skip_internet_connection_check.txt") {
 #############################################
 # skip self update
 #############################################
-my $skip_self_update_check = 0;
+# tb-coding: 上游已刪除 eqemu_server.pl,自我更新會下載到空檔並覆蓋本檔,因此一律略過
+my $skip_self_update_check = 1;
 if (-e "eqemu_server_skip_update.txt" || defined($ENV{'EQEMU_SERVER_SKIP_UPDATE'})) {
     print "[Info] Skipping self check\n";
     $skip_self_update_check = 1;
@@ -524,7 +527,7 @@ sub get_windows_wget
             mkdir("bin");
         }
         eval "use LWP::Simple qw(getstore);";
-        getstore("https://raw.githubusercontent.com/Akkadius/eqemu-install-v2/master/windows/wget.exe", "bin\\wget.exe");
+        getstore($install_repository_request_url . "windows/wget.exe", "bin\\wget.exe");
     }
 }
 
@@ -1253,7 +1256,7 @@ sub copy_file
 sub fetch_latest_windows_appveyor
 {
     print "[Update] Fetching Latest Windows Binaries (unstable) from Appveyor... \n";
-    get_remote_file("https://github.com/eqemu/server/releases/latest/download/eqemu-server-windows-x64.zip",
+    get_remote_file("https://github.com/EQEmu/EQEmu/releases/latest/download/eqemu-server-windows-x64.zip",
         "updates_staged/eqemu-server-windows-x64.zip",
         1
     );
@@ -1470,7 +1473,8 @@ sub fetch_peq_db_full
 sub map_files_fetch_bulk
 {
     print "[Install] Fetching Latest Maps... (This could take a few minutes...)\n";
-    get_remote_file("https://github.com/Akkadius/eqemu-maps/releases/latest/download/maps.zip", "maps/maps.zip", 1);
+    # tb-coding: Akkadius/eqemu-maps 已移除,改用 EQEmu/maps (zip 結構相同:base/nav/water/...)
+    get_remote_file("https://github.com/EQEmu/maps/releases/latest/download/maps.zip", "maps/maps.zip", 1);
     unzip('maps/maps.zip', 'maps/');
     print "[Install] Fetched Latest Maps\n";
     unlink('maps/maps.zip');
