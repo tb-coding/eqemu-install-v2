@@ -45,7 +45,6 @@ set "VCREDIST_EXE=vc_redist.x64.exe"
 set "VCREDIST_URL=https://aka.ms/vs/17/release/vc_redist.x64.exe"
 
 set "EQEMU_SERVER_PL_URL=https://raw.githubusercontent.com/tb-coding/eqemu-install-v2/main/eqemu_server.pl"
-set "EQEMU_CONFIG_URL=https://raw.githubusercontent.com/tb-coding/eqemu-install-v2/main/eqemu_config.json"
 
 REM Optional SHA256 checksums (leave empty to skip the comparison;
 REM the computed hash is always printed so it can be pinned here later).
@@ -56,6 +55,17 @@ set "VCREDIST_SHA256="
 REM --- Folders ---------------------------------------------------------------
 cd /d "%~dp0"
 set "INSTALL_DIR=%~dp0"
+REM Server folder: this folder (e.g. C:\EQEmu prepared by eqemu_setup.bat),
+REM or .\server when run from inside the repository (keeps new_server away from repo files)
+if not defined EQEMU_SERVER_DIR (
+    if exist "%~dp0..\eqemu_config.json" (
+        set "EQEMU_SERVER_DIR=%~dp0server"
+    ) else (
+        set "EQEMU_SERVER_DIR=%~dp0."
+    )
+)
+set "SERVER_DIR=%EQEMU_SERVER_DIR%\"
+if not exist "%SERVER_DIR%" mkdir "%SERVER_DIR%"
 set "DL_DIR=%~dp0downloads"
 set "LOG_DIR=%~dp0install_logs"
 if not exist "%DL_DIR%" mkdir "%DL_DIR%"
@@ -104,6 +114,7 @@ echo - New Path files are loaded
 echo - Optimized server binaries
 echo #########################################################
 echo Install folder : %INSTALL_DIR%
+echo Server folder  : %SERVER_DIR%
 echo Downloads      : %DL_DIR%
 echo Logs           : %LOG_DIR%
 echo #########################################################
@@ -156,37 +167,24 @@ call :DOWNLOAD "Strawberry Perl" "%PERL_URL%" "%DL_DIR%\%PERL_MSI%" 20000000 msi
 if errorlevel 1 goto :DOWNLOAD_FAILED
 
 :DL_MARIADB
-if not defined NEED_MARIADB goto :DL_EQEMU_CONFIG
+if not defined NEED_MARIADB goto :DL_EQEMU_SERVER
 call :DOWNLOAD "MariaDB %MARIADB_VERSION%" "%MARIADB_URL%" "%DL_DIR%\%MARIADB_MSI%" 20000000 msi "%MARIADB_SHA256%"
-if errorlevel 1 goto :DOWNLOAD_FAILED
-
-:DL_EQEMU_CONFIG
-if exist "%INSTALL_DIR%eqemu_config.json" (
-    echo   [OK] eqemu_config.json : already present
-    goto :DL_EQEMU_SERVER
-)
-if exist "%~dp0..\eqemu_config.json" (
-    copy /y "%~dp0..\eqemu_config.json" "%INSTALL_DIR%eqemu_config.json" >nul
-    echo   [OK] eqemu_config.json : copied from repository folder
-    goto :DL_EQEMU_SERVER
-)
-call :DOWNLOAD "eqemu_config.json" "%EQEMU_CONFIG_URL%" "%INSTALL_DIR%eqemu_config.json" 100 json ""
 if errorlevel 1 goto :DOWNLOAD_FAILED
 
 :DL_EQEMU_SERVER
 set "HAVE_SERVER_PL=1"
-if exist "%INSTALL_DIR%eqemu_server.pl" (
+if exist "%SERVER_DIR%eqemu_server.pl" (
     echo   [OK] eqemu_server.pl : already present
     goto :DOWNLOADS_DONE
 )
-call :DOWNLOAD "eqemu_server.pl" "%EQEMU_SERVER_PL_URL%" "%INSTALL_DIR%eqemu_server.pl" 1000 text ""
+call :DOWNLOAD "eqemu_server.pl" "%EQEMU_SERVER_PL_URL%" "%SERVER_DIR%eqemu_server.pl" 1000 text ""
 if not errorlevel 1 goto :DOWNLOADS_DONE
 set "HAVE_SERVER_PL="
 echo.
 echo [WARN] eqemu_server.pl could not be downloaded from:
 echo        %EQEMU_SERVER_PL_URL%
 echo        The server setup step ^(new_server^) will be skipped.
-echo        Put eqemu_server.pl next to this script, or set EQEMU_SERVER_PL_URL, and re-run later.
+echo        Put eqemu_server.pl into %SERVER_DIR%, or set EQEMU_SERVER_PL_URL, and re-run later.
 "%SYS32%\choice.exe" /c YN /m "Continue and install the prerequisites (VC++, Perl, MariaDB) only"
 if errorlevel 2 goto :FAIL
 
@@ -267,7 +265,16 @@ if not defined HAVE_SERVER_PL (
     echo   [SKIP] eqemu_server.pl is not available. Prerequisites are installed.
     goto :DONE
 )
-cd /d "%INSTALL_DIR%"
+REM eqemu_server.pl reads the database credentials from install_variables.txt
+if not exist "%SERVER_DIR%install_variables.txt" (
+    > "%SERVER_DIR%install_variables.txt" (
+        echo mysql_root:%MARIADB_ROOT_PASSWORD%
+        echo mysql_eqemu_db_name:peq
+        echo mysql_eqemu_user:root
+        echo mysql_eqemu_password:%MARIADB_ROOT_PASSWORD%
+    )
+)
+cd /d "%SERVER_DIR%"
 "%PERL_BIN%\perl.exe" eqemu_server.pl new_server
 if errorlevel 1 (
     echo   [FAIL] eqemu_server.pl new_server exited with an error.

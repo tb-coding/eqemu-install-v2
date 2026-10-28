@@ -51,7 +51,8 @@ if ($Config{osname} =~ /Win|MS/i) {
     $OS = "Windows";
 }
 
-if (-e "../eqemu_config.json") {
+# tb-coding: new_server 或目前資料夾已有設定檔時不往上層切換,避免跑到 repo 資料夾安裝
+if (-e "../eqemu_config.json" && !-e "eqemu_config.json" && $ARGV[0] ne "new_server") {
     print "[Info] Config is up one level, let's set current directory up one level...\n";
     chdir("../");
 }
@@ -256,8 +257,8 @@ sub new_server
 
     if ($file_count > 4 && (!-e "install_variables.txt" && !-e "../install_variables.txt")) {
         print "[New Server] ERROR: You must run eqemu_server.pl in an empty directory\n";
-        <>;
-        exit;
+        <STDIN>;
+        exit 1;
     }
 
     get_installation_variables();
@@ -938,7 +939,7 @@ sub show_menu_prompt
             $input = "";
         }
         else {
-            $input = <>;
+            $input = <STDIN>;
         }
 
         #::: If we're processing a CLI command, kill the loop
@@ -1314,7 +1315,7 @@ sub do_windows_login_server_setup
 
     print "[Install] Press any key to continue...\n";
 
-    <>; #Read from STDIN
+    <STDIN>; #Read from STDIN
 
 }
 
@@ -1352,7 +1353,7 @@ sub do_linux_login_server_setup
 
     print "[Install] Press any key to continue...\n";
 
-    <>; #Read from STDIN
+    <STDIN>; #Read from STDIN
 
 }
 
