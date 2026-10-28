@@ -28,7 +28,7 @@
 | 防火牆步驟顯示亂碼 | 是 `netsh` 中文輸出「確定。」的編碼問題,規則已成功加入。 |
 | 啟動時「系統找不到指定的路徑」 | 舊版 `t_start_server.bat` 清除不存在的 `logs/zone` 所致,不影響啟動;新版已修正。 |
 
-> 安全提醒:MariaDB root 預設密碼為 `eqemu`,伺服器若對外開放請更改;伺服器名稱等設定在 `C:\EQEmu\eqemu_config.json`。
+> 安全提醒:MariaDB root 預設密碼為 `eqemu`(`eqemu_install.bat` 結束時會顯示提醒與修改指令),伺服器若對外開放請更改,並同步修改 `eqemu_config.json`、`login.json` 的資料庫密碼;伺服器名稱等設定在 `C:\EQEmu\eqemu_config.json`。
 
 ## eqemu_server.pl
 
