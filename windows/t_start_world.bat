@@ -3,7 +3,7 @@
 @echo off
 cls
 cd /d "%~dp0"
-REM Strawberry Perl must be on PATH: perl.exe for the scripts and perl524.dll for zone.exe
-where perl >nul 2>&1 || set "PATH=C:\Strawberry\perl\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\c\bin;%PATH%"
+REM Always put Strawberry Perl first on PATH: perl.exe for the scripts and perl524.dll for zone.exe
+if exist "C:\Strawberry\perl\bin\perl524.dll" set "PATH=C:\Strawberry\perl\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\c\bin;%PATH%"
 start bin/world.exe
 exit
