@@ -55,8 +55,15 @@ set "VCREDIST_SHA256="
 REM --- Folders ---------------------------------------------------------------
 cd /d "%~dp0"
 set "INSTALL_DIR=%~dp0"
-REM EQEmu server files go into their own folder so new_server starts empty
-if not defined EQEMU_SERVER_DIR set "EQEMU_SERVER_DIR=%~dp0server"
+REM Server folder: this folder (e.g. C:\EQEmu prepared by eqemu_setup.bat),
+REM or .\server when run from inside the repository (keeps new_server away from repo files)
+if not defined EQEMU_SERVER_DIR (
+    if exist "%~dp0..\eqemu_config.json" (
+        set "EQEMU_SERVER_DIR=%~dp0server"
+    ) else (
+        set "EQEMU_SERVER_DIR=%~dp0."
+    )
+)
 set "SERVER_DIR=%EQEMU_SERVER_DIR%\"
 if not exist "%SERVER_DIR%" mkdir "%SERVER_DIR%"
 set "DL_DIR=%~dp0downloads"

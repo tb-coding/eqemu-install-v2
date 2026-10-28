@@ -22,7 +22,8 @@
 
 ### 使用注意
 
-- `eqemu_install.bat` 會把伺服器裝在 `windows\server\`(可用環境變數 `EQEMU_SERVER_DIR` 改位置),並依批次檔的 MariaDB 密碼產生 `install_variables.txt`。
+- 建議用法:以系統管理員身分執行 `windows\eqemu_setup.bat`,它會建立 `C:\EQEmu`(或第一個參數指定的資料夾),複製 `eqemu_install.bat`、`eqemu_server.pl` 與已下載的安裝檔,再從該資料夾啟動 `eqemu_install.bat`。
+- 直接在 repo 的 `windows\` 執行 `eqemu_install.bat` 時,伺服器會裝在 `windows\server\`;放在其他資料夾執行時就裝在該資料夾。可用環境變數 `EQEMU_SERVER_DIR` 指定位置。批次檔會依 MariaDB 密碼產生 `install_variables.txt`。
 - 手動執行 `new_server` 時,資料夾內檔案不可超過 4 個(或已有 `install_variables.txt`),否則會報「must run in an empty directory」。
 - 會先 DROP 再 CREATE 你輸入的資料庫名稱,請勿填既有資料庫。
 - Windows 執行檔會下載上游最新 release 放到 `bin/`;若要用自己編譯的版本,裝完後以自己的建置輸出覆蓋 `bin/`。
